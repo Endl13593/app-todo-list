@@ -77,7 +77,7 @@
 
 <script>
     import LoginMenu from '@/components/Auth/LoginMenu';
-    import Cookie from 'js-cookie';
+    import Cookie from '@/service/cookie';
     import { mapActions } from 'vuex';
     import { ValidationObserver, ValidationProvider } from 'vee-validate';
     import message from '@/utils/messages';
@@ -117,19 +117,22 @@
                 this.spinner.login = true;
 
                 this.$axios.post('v1/login', this.payload).then((response) => {
-                    const token = `${response.data.token_type} ${response.data.access_token}`;
-                    Cookie.set('_todolist_token', token, { expires: 30 });
 
+                    const token = `${response.data.token_type} ${response.data.access_token}`;
+                    Cookie.setToken(token);
                     this.SET_USER(response.data.data);
+                    this.$router.push({ name: 'index' });
+
                 }).catch((error) => {
+
                     const errorCode = error?.response?.data?.error || 'ServerError';
                     this.response.color = 'red';
                     this.response.message = message[errorCode];
+
                 }).finally(() => { this.spinner.login = false; });
             },
-            ...mapActions('user', [
-                'SET_USER',
-            ]),
+
+            ...mapActions('user', ['SET_USER']),
 
             resetResponse() {
                 this.response.color = '';

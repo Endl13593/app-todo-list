@@ -16,7 +16,7 @@
                 />
             </svg>
 
-            <span class="text-gray-500 ml-2">Todo list</span>
+            <span class="text-gray-500 ml-2"><RouterLink :to="{ name: 'index' }">Todo list</RouterLink></span>
         </div>
 
         <div class="flex items-center">
@@ -93,7 +93,7 @@
 </template>
 
 <script>
-    import { mapState } from 'vuex';
+    import { mapGetters } from 'vuex';
     import TwDropdown from '@/components/Utils/TwDropdown';
     import TwDropdownItem from '@/components/Utils/TwDropdownItem';
 
@@ -110,12 +110,12 @@
             };
         },
 
+        methods: {},
+
         computed: {
-            ...mapState({
-                user: state => state.user.user,
+            ...mapGetters({
+                'user': 'user/getUser',
             }),
         },
-
-        methods: {},
     };
 </script>
