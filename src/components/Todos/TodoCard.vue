@@ -60,6 +60,7 @@
             isDeleting() {
                 return this.todo.state === 'delete';
             },
+
         },
 
         methods: {

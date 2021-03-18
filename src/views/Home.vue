@@ -36,28 +36,22 @@
             >
         </div>
 
-        <div
+        <TodoCard
             v-for="todo in todos"
             :key="todo.id"
-            class="flex items-center justify-between bg-gray-300 rounded-sm px-4 h-15 mb-2"
-        >
-            <div>
-                <input
-                    type="text"
-                    v-model="todo.label"
-                    @keyup.enter="updateTodo(todo)"
-                >
-                <button
-                    @click.stop.prevent="destroyTodo(todo)"
-                >x</button>
-            </div>
-        </div>
+            :todo="todo"
+            @afterDeleting="afterDeleting"
+        />
     </div>
 </template>
 
 <script>
+    import TodoCard from '@/components/Todos/TodoCard';
+
     export default {
         name: 'Home',
+
+        components: { TodoCard },
 
         data() {
             return {
@@ -74,11 +68,13 @@
         },
 
         methods: {
-
             getTodos() {
                 this.spinner.get_todos = true;
                 this.$axios.get('v1/todos').then((response) => {
-                    this.todos = response.data.data;
+                    this.todos = response.data.data.map((e) => ({
+                        ...e,
+                        state: 'show',
+                    }));
                 }).finally(() => {
                     this.spinner.get_todos = false;
                 });
@@ -87,20 +83,14 @@
             createTodo() {
                 if (!this.newTodo) { return; }
                 this.$axios.post('v1/todos', {label: this.newTodo}).then((response) => {
-                    this.todos.unshift(response.data.data);
+                    this.todos.unshift({ ...response.data.data, state: 'show' });
                     this.newTodo = '';
                 });
             },
 
-            updateTodo(todo) {
-                this.$axios.put(`v1/todos/${todo.id}`, {label: todo.label});
-            },
-
-            destroyTodo(todo) {
-                this.$axios.delete(`v1/todos/${todo.id}`).then(() => {
-                    const idx = this.todos.findIndex(o => o.id === todo.id);
-                    this.todos.splice(idx, 1);
-                });
+            afterDeleting(todo) {
+                const idx = this.todos.findIndex(o => o.id === todo.id);
+                this.todos.splice(idx, 1);
             },
         },
     };
