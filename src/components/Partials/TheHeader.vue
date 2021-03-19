@@ -69,7 +69,7 @@
                     Meu perfil
                 </TwDropdownItem>
 
-                <TwDropdownItem :to="{ name: 'logout' }">
+                <TwDropdownItem @click="logout">
                     <svg
                         class="mr-3 h-5 w-5 text-gray-500 group-hover:text-gray-500 group-focus:text-gray-500"
                         viewBox="0 0 24 24"
@@ -96,6 +96,7 @@
     import { mapGetters } from 'vuex';
     import TwDropdown from '@/components/Utils/TwDropdown';
     import TwDropdownItem from '@/components/Utils/TwDropdownItem';
+    import Cookie from '@/service/cookie';
 
     export default {
         name: 'TheHeader',
@@ -110,7 +111,14 @@
             };
         },
 
-        methods: {},
+        methods: {
+            logout() {
+                this.$axios.get('v1/me/logout').then(() => {
+                    Cookie.deleteToken();
+                    this.$router.push({ name: 'login' });
+                });
+            },
+        },
 
         computed: {
             ...mapGetters({
